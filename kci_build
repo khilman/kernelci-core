@@ -177,7 +177,7 @@ class cmd_push_tarball(Command):
     help = "Create and up a source tarball to the remote storage server"
     args = [Args.build_config, Args.kdir, Args.storage,
             Args.api, Args.db_token]
-    opt_args = [Args.db_config]  # This should become mandatory
+    opt_args = [Args.keep, Args.db_config]  # This should become mandatory
 
     def __call__(self, configs, args):
         conf = configs['build_configs'][args.build_config]
@@ -185,7 +185,7 @@ class cmd_push_tarball(Command):
         if not all(func_args):
             print("Invalid arguments")
             return False
-        tarball_url = kernelci.build.push_tarball(*func_args)
+        tarball_url = kernelci.build.push_tarball(*func_args, keep=args.keep)
         if not tarball_url:
             return False
         print(tarball_url)

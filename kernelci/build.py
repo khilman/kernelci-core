@@ -316,7 +316,7 @@ def generate_fragments(config, kdir):
             generate_config_fragment(frag, kdir)
 
 
-def push_tarball(config, kdir, storage, api, token):
+def push_tarball(config, kdir, storage, api, token, keep=False):
     """Create and push a linux kernel source tarball to the storage server
 
     If a tarball with a same name is already on the storage server, no new
@@ -327,6 +327,7 @@ def push_tarball(config, kdir, storage, api, token):
     *storage* is the base URL of the storage server
     *api* is the URL of the KernelCI backend API
     *token* is the token to use with the KernelCI backend API
+    *keep* is whether to keep the tarball or delete it after pushing it
 
     The returned value is the URL of the uploaded tarball.
     """
@@ -342,7 +343,10 @@ def push_tarball(config, kdir, storage, api, token):
     tarball = "{}.tar.gz".format(config.name)
     make_tarball(kdir, tarball)
     upload_files(api, token, path, {tarball_name: open(tarball, 'rb')})
-    os.unlink(tarball)
+    if keep:
+        print("Tarball: {}".format(tarball))
+    else:
+        os.unlink(tarball)
     return tarball_url
 
 

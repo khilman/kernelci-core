@@ -154,6 +154,13 @@ class Args:
         'help': "Number of parallel build processes",
     }
 
+    # ToDo: split push_tarball with make_tarball command to run first
+    keep = {
+        'name': '--keep',
+        'help': "Keep local tarball file",
+        'action': 'store_true',
+    }
+
     jobs = {
         'name': '--jobs',
         'help': "File pattern with jobs to submit",
