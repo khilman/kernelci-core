@@ -27,6 +27,10 @@ file_systems:
     type: buildroot
     ramdisk: '{arch}/base/rootfs.cpio.gz'
 
+  debian_buster_nfs:
+     type: debian
+     ramdisk: 'buster/20190619.1/{arch}/initrd.cpio.gz'
+     nfs: 'buster/20190619.1/{arch}/full.rootfs.tar.xz'
   buildroot_nfs:
     type: buildroot
     nfs: '{arch}/base/rootfs.tar.xz'
