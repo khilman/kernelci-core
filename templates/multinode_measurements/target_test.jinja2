@@ -1,0 +1,25 @@
+- test:
+    role:
+    - target
+    namespace: device
+    timeout:
+      minutes: 10
+    definitions:
+    - repository:
+        metadata:
+          format: Lava-Test Test Definition 1.0
+          name: client-wait
+          description: "client waiting for server"
+          os:
+          - debian
+        run:
+          steps:
+          - lava-sync target_ready
+          - lava-test-case client --shell uname -a
+          - lava-test-case update --shell apt-get update
+          - lava-sync target_finished
+
+      from: inline
+      name: target
+      path: inline/target.yaml
+
