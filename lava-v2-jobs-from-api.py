@@ -176,14 +176,11 @@ def get_job_params(config, test_config, defconfig, opts, build, plan):
         'plan_name': test_plan.name,
         'file_server_resource': file_server_resource,
         'build_environment': build.get('build_environment'),
-        'kernel_addr': device_type.kernel_addr,
-        'dtb_addr': device_type.dtb_addr,
-        'ramdisk_addr': device_type.ramdisk_addr,
         'boot_image':config.get('boot_image'),
-        'cmdline': device_type.cmdline,
     }
 
     job_params.update(test_plan.params)
+    job_params.update(device_type.params)
     add_callback_params(job_params, config, plan)
 
     return job_params
