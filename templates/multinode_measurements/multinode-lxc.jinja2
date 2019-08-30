@@ -6,16 +6,6 @@
 {%- block main %}
 {{ super() }}
 
-notify:
-  criteria:
-    status: finished
-  callback:
-    url: {{ callback_url }}
-    method: POST
-    dataset: all
-    token: {{ token }}
-    content-type: json
-
 protocols:
   lava-lxc:
     host:
