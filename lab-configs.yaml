@@ -5,7 +5,9 @@ labs:
     lab_type: lava
     url: 'http://lava.baylibre.com:10080/RPC2/'
     filters:
-      - blacklist: {tree: [drm-tip]}
+      - blacklist:
+          plan:
+            - boot-nfs
       - whitelist:
           plan:
             - baseline
