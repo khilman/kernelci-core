@@ -583,6 +583,13 @@ build_configs:
   khilman:
     tree: khilman
     branch: 'to-build'
+    variants:
+      gcc-8:
+        build_environment: gcc-8
+        architectures:
+          arm64:
+            base_defconfig: defconfig
+          arm: *staging_arm
 
   krzysztof:
     tree: krzysztof
