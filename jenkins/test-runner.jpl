@@ -85,6 +85,7 @@ generate \
 --output=${jobs_dir} \
 --callback-id=${params.CALLBACK_ID} \
 --callback-url=${params.CALLBACK_URL} \
+--plan baseline --mach amlogic --target meson-g12b-odroid-n2 \
 """)
         }
     }
