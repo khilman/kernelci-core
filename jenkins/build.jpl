@@ -117,13 +117,25 @@ publish_kernel \
     }
 }
 
-node("docker" && params.NODE_LABEL) {
-    def j = new Job()
-    def kci_core = "${env.WORKSPACE}/kernelci-core"
-    def kdir = "${env.WORKSPACE}/linux"
-    def docker_image = null
+podTemplate(yaml: """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: k8s-build-${params.BUILD_ENVIRONMENT}-${params.ARCH}
+    image: ${params.DOCKER_BASE}build-${params.BUILD_ENVIRONMENT}_${params.ARCH}
+    command: ['cat']
+    tty: true
+"""
+  ) {
+    
+    node(POD_LABEL) {
+	/* def kci_core = "${env.WORKSPACE}/kernelci-core"
+	 * FIXME: how to do git checkout below into subdir of workspace? */
+	def kci_core = "${env.WORKSPACE}"
+	def kdir = "${env.WORKSPACE}/linux"
 
-    print("""\
+	print("""\
     Config:    ${params.BUILD_CONFIG}
     CPU arch:  ${params.ARCH}
     Describe:  ${params.GIT_DESCRIBE}
@@ -131,32 +143,27 @@ node("docker" && params.NODE_LABEL) {
     Defconfig: ${params.DEFCONFIG}
     Compiler:  ${params.BUILD_ENVIRONMENT}""")
 
-    j.dockerPullWithRetry("${params.DOCKER_BASE}build-base").inside() {
-        j.cloneKciCore(kci_core, params.KCI_CORE_URL, params.KCI_CORE_BRANCH)
-        build_env_docker_image = j.dockerImageName(
-            kci_core, params.BUILD_ENVIRONMENT, params.ARCH)
-        docker_image = "${params.DOCKER_BASE}build-${build_env_docker_image}"
-    }
-
-    j.dockerPullWithRetry(docker_image).inside() {
-        stage("Init") {
-            timeout(time: 30, unit: 'MINUTES') {
-                dir(kci_core) {
-                  sh(script: """./kci_build pull_tarball \
+	git url: "${params.KCI_CORE_URL}", branch: "${params.KCI_CORE_BRANCH}"
+	container("k8s-build-${params.BUILD_ENVIRONMENT}-${params.ARCH}") {
+	    stage('Init') {
+		timeout(time: 30, unit: 'MINUTES') {
+		    dir(kci_core) {
+			sh(script: """./kci_build pull_tarball \
                                 --kdir ${kdir} \
                                 --url ${params.SRC_TARBALL} \
                                 --retries=12 \
                                 --delete \
                   """)
-                }
+                    }
+		}
             }
-        }
 
-        stage("Build") {
-            timeout(time: 180, unit: 'MINUTES') {
-                buildConfig(kdir, kci_core)
-                sh(script: "rm -rf ${kdir}")
-            }
+            stage("Build") {
+		timeout(time: 180, unit: 'MINUTES') {
+                    buildConfig(kdir, kci_core)
+                    sh(script: "rm -rf ${kdir}")
+		}
+	    }
         }
     }
 }
