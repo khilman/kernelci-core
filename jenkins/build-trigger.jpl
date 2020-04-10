@@ -225,7 +225,7 @@ def scheduleTests(build_job_name, build_job_number, labs, kci_core) {
 
 def buildKernelStep(job, arch, defconfig, build_env, opts, labs, kci_core) {
     def node_label = "builder"
-    def parallel_builds = "4"
+    def parallel_builds = ""
 
     if (defconfig.matches(".*allmodconfig.*")) {
         node_label = "big-config-builder"
