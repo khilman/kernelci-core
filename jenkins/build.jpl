@@ -121,6 +121,7 @@ podTemplate(yaml: """
 apiVersion: v1
 kind: Pod
 spec:
+  idleMinutes: 2
   containers:
   - name: k8s-build-${params.BUILD_ENVIRONMENT}-${params.ARCH}
     image: ${params.DOCKER_BASE}build-${params.BUILD_ENVIRONMENT}_${params.ARCH}
