@@ -125,6 +125,12 @@ spec:
   containers:
   - name: k8s-build-${params.BUILD_ENVIRONMENT}-${params.ARCH}
     image: ${params.DOCKER_BASE}build-${params.BUILD_ENVIRONMENT}_${params.ARCH}
+    resources:
+      limits:
+        cpu: "8"
+      requests:
+        cpu: "7.5"
+        memory: 2Gi
     command: ['cat']
     tty: true
 """
