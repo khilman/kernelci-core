@@ -14,8 +14,24 @@ file_system_types:
       x86:     [{arch: i386}, {arch: x86_64}]
       mipsel:  [{arch: mips}]
 
+  buildroot-staging:
+    url: 'http://storage.staging.kernelci.org/images/rootfs/buildroot/kci-2019.02-12-ga2fb3c8af5e6'
+
+    arch_map:
+      arm64be: [{arch: arm64, endian: big}]
+      armeb:   [{arch: arm,   endian: big}]
+      armel:   [{arch: arm}]
+      x86:     [{arch: i386}, {arch: x86_64}]
+      mipsel:  [{arch: mips}]
+
   debian:
     url: 'http://storage.kernelci.org/images/rootfs/debian'
+    arch_map:
+      armhf: [{arch: arm}]
+      amd64: [{arch: x86_64}]
+
+  debian-staging:
+    url: 'http://storage.staging.kernelci.org/images/rootfs/debian'
     arch_map:
       armhf: [{arch: arm}]
       amd64: [{arch: x86_64}]
@@ -32,7 +48,7 @@ file_systems:
     nfs: '{arch}/base/rootfs.tar.xz'
 
   buildroot_baseline_ramdisk:
-    type: buildroot
+    type: buildroot-staging
     ramdisk: '{arch}/baseline/rootfs.cpio.gz'
 
   buildroot_kselftest_ramdisk:
@@ -44,8 +60,8 @@ file_systems:
     ramdisk: 'buster/20200424.0/{arch}/rootfs.cpio.gz'
 
   debian_buster-cros-ec_ramdisk:
-    type: debian
-    ramdisk: 'buster-cros-ec/20200403.0/{arch}/rootfs.cpio.gz'
+    type: debian-staging
+    ramdisk: 'buster-cros-ec/20200514.0/{arch}/rootfs.cpio.gz'
 
   debian_buster-igt_ramdisk:
     type: debian
@@ -81,14 +97,14 @@ test_plans:
   baseline:
     rootfs: buildroot_baseline_ramdisk
     filters:
-      - blacklist: *kselftest_defconfig_clang_environment_filter
+      - blacklist: *kselftest_defconfig_filter
 
   baseline_qemu:
     base_name: baseline
     rootfs: buildroot_baseline_ramdisk
     pattern: 'baseline/generic-qemu-baseline-template.jinja2'
     filters:
-      - blacklist: *kselftest_defconfig_clang_environment_filter
+      - blacklist: *kselftest_defconfig_filter
 
   baseline-fastboot:
     rootfs: buildroot_baseline_ramdisk
@@ -134,7 +150,7 @@ test_plans:
   boot:
     rootfs: buildroot_ramdisk
     filters:
-      - blacklist: *kselftest_defconfig_clang_environment_filter
+      - blacklist: *kselftest_defconfig_filter
 
   boot-nfs:
     rootfs: buildroot_nfs
@@ -685,6 +701,14 @@ device_types:
     filters:
       - blacklist: {defconfig: ['allnoconfig', 'allmodconfig']}
 
+# this is the same device than r8a7796-m3ulcb
+  r8a77960-ulcb:
+    mach: renesas
+    class: arm64-dtb
+    boot_method: uboot
+    filters:
+      - blacklist: {defconfig: ['allnoconfig', 'allmodconfig']}
+
   meson8b-odroidc1:
     mach: amlogic
     class: arm-dtb
@@ -1004,7 +1028,7 @@ device_types:
     boot_method: qemu
     context:
       arch: arm64
-      cpu: 'cortex-a57'
+      cpu: 'max'
       guestfs_interface: 'virtio'
       machine: 'virt,gic-version=2'
     filters:
@@ -1017,7 +1041,7 @@ device_types:
     boot_method: qemu
     context:
       arch: arm64
-      cpu: 'cortex-a57'
+      cpu: 'max'
       guestfs_interface: 'virtio'
       machine: 'virt,gic-version=3'
     filters:
@@ -1034,6 +1058,21 @@ device_types:
       guestfs_interface: 'ide'
     filters:
       - whitelist: {defconfig: ['i386_defconfig']}
+
+  qemu_mips-malta:
+    base_name: qemu
+    mach: qemu
+    arch: mips
+    boot_method: qemu
+    context:
+      arch: mipsel
+      guestfs_interface: 'ide'
+      machine: 'malta'
+      memory: 256
+      model: 'model=pcnet'
+      no_kvm: True
+    filters:
+      - whitelist: {defconfig: ['malta_kvm_guest_defconfig']}
 
   qemu_x86_64:
     base_name: qemu
@@ -1086,6 +1125,15 @@ device_types:
     flags: ['lpae']
 
   r8a7795-salvator-x:
+    mach: renesas
+    class: arm64-dtb
+    boot_method: uboot
+    flags: ['big_endian']
+    filters:
+      - blacklist: {defconfig: ['allnoconfig', 'allmodconfig']}
+
+# this is the same device than r8a7795-salvator-x
+  r8a77950-salvator-x:
     mach: renesas
     class: arm64-dtb
     boot_method: uboot
@@ -1959,6 +2007,12 @@ test_configs:
       - boot_qemu
       - simple_qemu
 
+  - device_type: qemu_mips-malta
+    test_plans:
+      - baseline_qemu
+      - boot_qemu
+      - simple_qemu
+
   - device_type: qemu_x86_64
     test_plans:
       - baseline_qemu
@@ -1981,7 +2035,24 @@ test_configs:
       - kselftest
       - simple
 
+# this is the same device than r8a7795-salvator-x
+  - device_type: r8a77950-salvator-x
+    test_plans:
+      - baseline
+      - boot
+      - boot-nfs
+      - kselftest
+      - simple
+
   - device_type: r8a7796-m3ulcb
+    test_plans:
+      - baseline
+      - boot
+      - simple
+      - usb
+
+# this is the same device than r8a7796-m3ulcb
+  - device_type: r8a77960-ulcb
     test_plans:
       - baseline
       - boot

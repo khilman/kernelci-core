@@ -34,6 +34,12 @@ fi
 
     echo "Build has now finished, reporting result to dashboard."
     curl -X POST -H "Authorization: $EMAIL_AUTH_TOKEN" -H "Content-Type: application/json" -d '{"job": "'$TREE_NAME'", "kernel": "'$GIT_DESCRIBE'", "git_branch": "'$BRANCH'"}' ${API}/job
+
+if [ "$TREE_NAME" != "kernelci" ]; then
+    echo "Only dealing with kernelci tree on staging.kernelci.org"
+    exit 0
+fi
+
     if [ "$EMAIL" != "true" ]; then
         echo "Not sending emails because EMAIL was false"
         exit 0
@@ -237,7 +243,7 @@ fi
         curl -X POST -H "Authorization: $EMAIL_AUTH_TOKEN" -H "Content-Type: application/json" -d '{"job": "'$TREE_NAME'", "kernel": "'$GIT_DESCRIBE'", "git_branch": "'$BRANCH'", "boot_report": 1, "format": ["txt"], "send_to": ["rafael@kernel.org", "linux-pm@vger.kernel.org", "kernel-build-reports@lists.linaro.org"], "delay": 2700}' ${API}/send
         curl -X POST -H "Authorization: $EMAIL_AUTH_TOKEN" -H "Content-Type: application/json" -d '{"job": "'$TREE_NAME'", "kernel": "'$GIT_DESCRIBE'", "git_branch": "'$BRANCH'",  "report_type": "test", "plan": "baseline", "send_to": ["rafael@kernel.org", "linux-pm@vger.kernel.org", "kernel-build-reports@lists.linaro.org"], "format": ["txt"], "delay": 2700}' ${API}/send
         curl -X POST -H "Authorization: $EMAIL_AUTH_TOKEN" -H "Content-Type: application/json" -d '{"job": "'$TREE_NAME'", "kernel": "'$GIT_DESCRIBE'", "git_branch": "'$BRANCH'",  "report_type": "test", "plan": "sleep", "send_to": ["rafael@kernel.org", "linux-pm@vger.kernel.org", "kernel-build-reports@lists.linaro.org"], "format": ["txt"], "delay": 3600}' ${API}/send
-    elif [ "$TREE_NAME" == "kernelci" ]; then
+    elif [ "$TREE_NAME" == "kernelci" ] || [ "$TREE_NAME" == "mainline" ]; then
         echo "Sending results to kernelci folks"
         curl -X POST -H "Authorization: $EMAIL_AUTH_TOKEN" -H "Content-Type: application/json" -d '{"job": "'$TREE_NAME'", "kernel": "'$GIT_DESCRIBE'", "git_branch": "'$BRANCH'", "build_report": 1, "format": ["txt"], "send_to": ["gtucker@collabora.com", "kernelci-results-staging@groups.io"], "delay": 0}' ${API}/send
         curl -X POST -H "Authorization: $EMAIL_AUTH_TOKEN" -H "Content-Type: application/json" -d '{"job": "'$TREE_NAME'", "kernel": "'$GIT_DESCRIBE'", "git_branch": "'$BRANCH'", "boot_report": 1, "format": ["txt"], "send_to": ["gtucker@collabora.com", "kernelci-results-staging@groups.io"], "delay": 1800}' ${API}/send
