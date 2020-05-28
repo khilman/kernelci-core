@@ -188,9 +188,9 @@ node("docker" && "k8s" && params.NODE_LABEL) {
 	    stage("Init") {
 		/* list clusters to init/refresh auth credentials */
 		print("K8S: Google Cloud clusters available:")
-		sh(script: "gcloud container clusters list")
+		sh(script: "gcloud container clusters list || exit 0")
 		print("K8S: Azure clusters available:")
-		sh(script: "az aks list -o table")
+		sh(script: "az aks list -o table || exit 0")
 		
 		print("K8S context: ${k8s_context}.  Current nodes:")
 		sh(script: "kubectl --context ${k8s_context} get nodes")
