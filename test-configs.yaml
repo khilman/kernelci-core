@@ -1816,6 +1816,7 @@ test_configs:
     test_plans:
       - baseline
       - baseline-fastboot
+      - sleep_mem
 
   - device_type: minnowboard-turbot-E3826
     test_plans:

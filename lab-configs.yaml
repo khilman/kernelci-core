@@ -12,6 +12,7 @@ labs:
             - baseline-fastboot
             - kselftest
             - preempt-rt
+            - sleep_mem
 
   lab-broonie:
     lab_type: lava
