@@ -4,6 +4,13 @@ modes=$*
 ls -l /dev/rtc0
 if [ $? -eq 0 ];then
 	lava-test-case rtc-exist --result pass
+	#
+	# Wait for the firmware load timeout to complete, otherwise
+	# fw loader interferes with suspend.
+	#
+	if [ -e /sys/class/firmware/timeout ]; then
+	    sleep $(cat /sys/class/firmware/timeout)
+	fi
 	for mode in $modes; do
 		for i in $(seq 1 10); do
 			rtcwake -d rtc0 -m $mode -s 5
