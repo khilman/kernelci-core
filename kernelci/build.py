@@ -338,7 +338,7 @@ def push_tarball(config, kdir, storage, api, token, keep=False):
     ]))
     tarball_url = urllib.parse.urljoin(storage, '/'.join([path, tarball_name]))
     resp = requests.head(tarball_url)
-    if resp.status_code == 200:
+    if resp.status_code == 200 and not keep:
         return tarball_url
     tarball = "{}.tar.gz".format(config.name)
     make_tarball(kdir, tarball)
