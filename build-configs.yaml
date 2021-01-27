@@ -436,6 +436,21 @@ build_configs:
   amlogic_integ:
     tree: amlogic
     branch: 'integ'
+    variants:
+      gcc-8:
+        <<: *gcc_8_minimal
+        architectures:
+          arm64: 
+        defconfigs:
+          arm64:
+            base_defconfig: 'defconfig'
+      clang-11:
+        build_environment: clang-11
+        architectures:
+          arm64:
+        defconfigs:
+          arm64:
+            base_defconfig: 'defconfig'
 
   android_3.18:
     tree: android
